@@ -6,7 +6,6 @@ import {
   List,
   message,
   Rate,
-  Spin,
   Typography,
   Select,
 } from "antd";
@@ -19,8 +18,10 @@ function Products() {
   const param = useParams();
   const [items, setItems] = useState([]);
   const [sortOrder, setSortOrder] = useState("az");
+
   useEffect(() => {
     setLoading(true);
+
     (param?.categoryId
       ? getProductsByCategory(param.categoryId)
       : getAllProducts()
@@ -32,6 +33,7 @@ function Products() {
 
   const getSortedItems = () => {
     const sortedItems = [...items];
+
     sortedItems.sort((a, b) => {
       const aLowerCaseTitle = a.title.toLowerCase();
       const bLowerCaseTitle = b.title.toLowerCase();
@@ -49,11 +51,22 @@ function Products() {
           ? 0
           : -1;
       } else if (sortOrder === "lowHigh") {
-        return a.price > b.price ? 1 : a.price === b.price ? 0 : -1;
+        return a.price > b.price
+          ? 1
+          : a.price === b.price
+          ? 0
+          : -1;
       } else if (sortOrder === "highLow") {
-        return a.price < b.price ? 1 : a.price === b.price ? 0 : -1;
+        return a.price < b.price
+          ? 1
+          : a.price === b.price
+          ? 0
+          : -1;
       }
+
+      return 0;
     });
+
     return sortedItems;
   };
 
@@ -61,6 +74,7 @@ function Products() {
     <div className="productsContainer">
       <div>
         <Typography.Text>View Items Sorted By: </Typography.Text>
+
         <Select
           onChange={(value) => {
             setSortOrder(value);
@@ -84,11 +98,13 @@ function Products() {
               value: "highLow",
             },
           ]}
-        ></Select>
+        />
       </div>
+
       <List
         loading={loading}
         grid={{ column: 3 }}
+        dataSource={getSortedItems()}
         renderItem={(product, index) => {
           return (
             <Badge.Ribbon
@@ -101,7 +117,10 @@ function Products() {
                 title={product.title}
                 key={index}
                 cover={
-                  <Image className="itemCardImage" src={product.thumbnail} />
+                  <Image
+                    className="itemCardImage"
+                    src={product.thumbnail}
+                  />
                 }
                 actions={[
                   <Rate allowHalf disabled value={product.rating} />,
@@ -123,31 +142,37 @@ function Products() {
                   }
                   description={
                     <Typography.Paragraph
-                      ellipsis={{ rows: 2, expandable: true, symbol: "more" }}
+                      ellipsis={{
+                        rows: 2,
+                        expandable: true,
+                        symbol: "more",
+                      }}
                     >
                       {product.description}
                     </Typography.Paragraph>
                   }
-                ></Card.Meta>
+                />
               </Card>
             </Badge.Ribbon>
           );
         }}
-        dataSource={getSortedItems()}
-      ></List>
+      />
     </div>
   );
 }
 
 function AddToCartButton({ item }) {
   const [loading, setLoading] = useState(false);
+
   const addProductToCart = () => {
     setLoading(true);
-    addToCart(item.id).then((res) => {
+
+    addToCart(item.id).then(() => {
       message.success(`${item.title} has been added to cart!`);
       setLoading(false);
     });
   };
+
   return (
     <Button
       type="link"
@@ -160,4 +185,5 @@ function AddToCartButton({ item }) {
     </Button>
   );
 }
+
 export default Products;
